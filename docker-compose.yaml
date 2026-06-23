@@ -1,0 +1,16 @@
+services: 
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: techfix-db
+    restart: always
+    environment:
+      POSTGRES_USER: jpbolanio
+      POSTGRES_PASSWORD: juampi123
+      POSTGRES_DB: techfix
+    ports: 
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes: 
+  postgres_data:
