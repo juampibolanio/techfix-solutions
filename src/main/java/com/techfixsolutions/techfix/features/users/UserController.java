@@ -43,7 +43,7 @@ public class UserController {
     return userService.patch(uuid, dto);
   }
 
-  @DeleteMapping("/{id{")
+  @DeleteMapping("/{id}")
   public void delete(@PathVariable UUID uuid) {
     userService.delete(uuid);
   }
