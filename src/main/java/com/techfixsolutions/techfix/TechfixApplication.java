@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class TechfixApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TechfixApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(TechfixApplication.class, args);
+  }
 }
