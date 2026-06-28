@@ -1,5 +1,10 @@
 package com.techfixsolutions.techfix.features.categories;
 
-public class CategoryRepository {
+import com.techfixsolutions.techfix.features.categories.models.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface CategoryRepository extends JpaRepository<Category, UUID> {
     
 }

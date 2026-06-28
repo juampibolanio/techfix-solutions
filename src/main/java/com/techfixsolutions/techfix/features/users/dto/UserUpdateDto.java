@@ -8,5 +8,7 @@ public record UserUpdateDto(
     @Size(min = 3, max = 50, message = "Full name must be between 3 and 50 characters")
     String fullName,
     
-    @Email(message = "Email is not valid") String email,
+    @Email(message = "Email is not valid")
+    String email,
+
     Roles role) {}
