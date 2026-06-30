@@ -23,7 +23,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Optional<Category> findOne(UUID uuid) {
+    public Optional<Category> findById(UUID uuid) {
         return categoryRepository.findById(uuid);
     }
 
