@@ -1,43 +1,48 @@
 package com.techfixsolutions.techfix.features.users;
 
 import com.techfixsolutions.techfix.features.users.dto.UserDto;
+import com.techfixsolutions.techfix.features.users.dto.UserResponseDto;
 import com.techfixsolutions.techfix.features.users.dto.UserUpdateDto;
-import com.techfixsolutions.techfix.features.users.models.User;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-  private final UserService userService;
+  private final UserService service;
 
   @GetMapping
-  public List<User> findAll() {
-    return userService.findAll();
+  public ResponseEntity<List<UserResponseDto>> findAll() {
+    return ResponseEntity.ok(service.findAll());
   }
 
-  @GetMapping("/{id}")
-  public Optional<User> findById(@PathVariable UUID uuid) {
-    return userService.findById(uuid);
+  @GetMapping("/{uuid}")
+  public ResponseEntity<UserResponseDto> findById(@PathVariable UUID uuid) {
+    return ResponseEntity.ok(service.findById(uuid));
   }
 
   @PostMapping
-  public User create(@Valid @RequestBody UserDto dto) {
-    return userService.create(dto);
+  public ResponseEntity<UserResponseDto> create(@Valid @RequestBody UserDto dto) {
+    return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(service.create(dto));
   }
 
-  @PatchMapping("/{id}")
-  public User patch(@PathVariable UUID uuid, @Valid @RequestBody UserUpdateDto dto) {
-    return userService.patch(uuid, dto);
+  @PatchMapping("/{uuid}")
+  public ResponseEntity<UserResponseDto> patch(@PathVariable UUID uuid, @Valid @RequestBody UserUpdateDto dto) {
+    return ResponseEntity.ok(service.patch(uuid, dto));
   }
 
-  @DeleteMapping("/{id}")
-  public void delete(@PathVariable UUID uuid) {
-    userService.delete(uuid);
+  @DeleteMapping("/{uuid}")
+  public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
+    service.delete(uuid);
+
+    return ResponseEntity.noContent().build();
   }
 }

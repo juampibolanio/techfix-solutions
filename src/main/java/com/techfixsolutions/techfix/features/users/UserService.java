@@ -1,11 +1,12 @@
 package com.techfixsolutions.techfix.features.users;
 
 import com.techfixsolutions.techfix.features.users.dto.UserDto;
+import com.techfixsolutions.techfix.features.users.dto.UserResponseDto;
 import com.techfixsolutions.techfix.features.users.dto.UserUpdateDto;
 import com.techfixsolutions.techfix.features.users.exceptions.UserNotFoundException;
+import com.techfixsolutions.techfix.features.users.mappers.UserMapper;
 import com.techfixsolutions.techfix.features.users.models.User;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,48 +14,47 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-  private final UserRepository userRepository;
+  private final UserRepository repository;
+  private final UserMapper mapper;
 
-  public List<User> findAll() {
-    return userRepository.findAll();
+  public List<UserResponseDto> findAll() {
+    return repository.findAll()
+            .stream()
+            .map((mapper::toResponseDto))
+            .toList();
   }
 
-  public Optional<User> findById(UUID uuid) {
-    return userRepository.findById(uuid);
+  public UserResponseDto findById(UUID uuid) {
+    User user = repository.findById(uuid)
+            .orElseThrow(() -> new UserNotFoundException("User with id " + uuid + " not found"));
+
+    return mapper.toResponseDto(user);
   }
 
-  public User create(UserDto dto) {
-    User newUser = User.builder().fullName(dto.fullName()).email(dto.email()).build();
+  public UserResponseDto create(UserDto dto) {
+    User mappedUser = mapper.toEntity(dto);
 
-    return userRepository.save(newUser);
+    User savedUser = repository.save(mappedUser);
+
+    return mapper.toResponseDto(savedUser);
   }
 
-  public User patch(UUID uuid, UserUpdateDto dto) {
-    User currentUser = userRepository
-        .findById(uuid)
+  public UserResponseDto patch(UUID uuid, UserUpdateDto dto) {
+    User currentUser = repository.findById(uuid)
         .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-    if (dto.fullName() != null) {
-      currentUser.setFullName(dto.fullName());
-    }
+    mapper.updateEntity(currentUser, dto);
 
-    if (dto.email() != null) {
-      currentUser.setEmail(dto.email());
-    }
+    User updatedUser = repository.save(currentUser);
 
-    if (dto.role() != null) {
-      currentUser.setRole(dto.role());
-    }
-
-    return userRepository.save(currentUser);
+    return mapper.toResponseDto(updatedUser);
   }
 
   public void delete(UUID uuid) {
-
-    if (!userRepository.existsById(uuid)) {
+    if (!repository.existsById(uuid)) {
       throw new UserNotFoundException("User with id " + uuid + " not found");
     }
 
-    userRepository.deleteById(uuid);
+    repository.deleteById(uuid);
   }
 }
