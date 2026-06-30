@@ -5,14 +5,13 @@ import com.techfixsolutions.techfix.features.categories.dto.CategoryUpdateDto;
 import com.techfixsolutions.techfix.features.categories.models.Category;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
