@@ -3,6 +3,7 @@ package com.techfixsolutions.techfix.features.users.dto;
 import com.techfixsolutions.techfix.features.users.models.Roles;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UserDto(
@@ -13,5 +14,5 @@ public record UserDto(
     @Email(message = "Email is not valid") 
     String email,
 
-    @NotBlank(message = "Role is required") 
+    @NotNull(message = "Role is required")
     Roles role) {}
