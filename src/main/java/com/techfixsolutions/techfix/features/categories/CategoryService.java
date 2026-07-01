@@ -1,11 +1,12 @@
 package com.techfixsolutions.techfix.features.categories;
 
 import com.techfixsolutions.techfix.features.categories.dto.CategoryDto;
+import com.techfixsolutions.techfix.features.categories.dto.CategoryResponseDto;
 import com.techfixsolutions.techfix.features.categories.dto.CategoryUpdateDto;
 import com.techfixsolutions.techfix.features.categories.exceptions.CategoryAlreadyExistsException;
 import com.techfixsolutions.techfix.features.categories.exceptions.CategoryNotFoundException;
+import com.techfixsolutions.techfix.features.categories.mappers.CategoryMapper;
 import com.techfixsolutions.techfix.features.categories.models.Category;
-import com.techfixsolutions.techfix.features.users.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,45 +17,52 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-    private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
+    private final CategoryRepository repository;
+    private final CategoryMapper mapper;
 
-    public List<Category> findAll() {
-        return categoryRepository.findAll();
+    public List<CategoryResponseDto> findAll() {
+        return repository.findAll()
+                .stream()
+                .map((mapper::toResponseDto))
+                .toList();
     }
 
-    public Optional<Category> findById(UUID uuid) {
-        return categoryRepository.findById(uuid);
+    public CategoryResponseDto findById(UUID uuid) {
+        Category category = repository.findById(uuid)
+                .orElseThrow(() -> new CategoryNotFoundException("Category with id " + uuid + " not found."));
+
+        return mapper.toResponseDto(category);
     }
 
-    public Category create(CategoryDto dto) {
-        Category newCategory = Category.builder().name(dto.name()).description(dto.description()).build();
-        return categoryRepository.save(newCategory);
+    public CategoryResponseDto create(CategoryDto dto) {
+        Category mappedCategory = mapper.toEntity(dto);
+
+        Category savedCategory = repository.save(mappedCategory);
+
+        return mapper.toResponseDto(savedCategory);
     }
 
-    public Category patch(UUID uuid, CategoryUpdateDto dto) {
-        Category currentCategory = categoryRepository
-                .findById(uuid)
+    public CategoryResponseDto patch(UUID uuid, CategoryUpdateDto dto) {
+        Category currentCategory = repository.findById(uuid)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
         if (dto.name() != null && !dto.name().isBlank() && !currentCategory.getName().equals(dto.name())) {
-            if (categoryRepository.findByName(dto.name()).isPresent())    {
+            if (repository.findByName(dto.name()).isPresent())    {
                 throw new CategoryAlreadyExistsException("Category with name '" + dto.name() + "' already exists");
             }
-            currentCategory.setName(dto.name());
         }
 
-        if (dto.description() != null && !dto.description().isBlank()) {
-            currentCategory.setDescription(dto.description());
-        }
+        mapper.updateEntity(currentCategory, dto);
 
-        return categoryRepository.save(currentCategory);
+        Category updatedCategory = repository.save(currentCategory);
+
+        return mapper.toResponseDto(updatedCategory);
     }
 
     public void delete(UUID uuid) {
-        if (!userRepository.existsById(uuid)) {
+        if (!repository.existsById(uuid)) {
             throw new CategoryNotFoundException("Category with id " + uuid + " not found");
         }
-        userRepository.deleteById(uuid);
+        repository.deleteById(uuid);
     }
 }
