@@ -42,5 +42,4 @@ public class UserMapper {
             user.setRole(dto.role());
         }
     }
-
 }
