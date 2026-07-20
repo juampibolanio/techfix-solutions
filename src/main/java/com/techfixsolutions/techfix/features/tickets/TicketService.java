@@ -71,7 +71,6 @@ public class TicketService {
                 .orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 
         ticket.setStatus(dto.status());
-        ticket.setUpdatedAt(Instant.now());
         Ticket updatedTicket = ticketRepository.save(ticket);
 
         return mapper.toResponseDto(updatedTicket, null);
@@ -85,7 +84,6 @@ public class TicketService {
                 .orElseThrow(() -> new UserNotFoundException("Agent not found"));
 
         ticket.setAgent(agent);
-        ticket.setUpdatedAt(Instant.now());
 
         return mapper.toResponseDto(ticket, null);
     }
