@@ -34,8 +34,8 @@ public class CommentService {
                 .toList();
     }
 
-    public CommentResponseDto create(CommentDto dto) {
-        Ticket ticket = ticketRepository.findById(dto.ticketId())
+    public CommentResponseDto create(UUID ticketUuid, CommentDto dto) {
+        Ticket ticket = ticketRepository.findById(ticketUuid)
                 .orElseThrow(() -> new TicketNotFoundException("Ticket with id " + dto.ticketId() + " not found"));
 
         User user = userRepository.findById(dto.userId())
