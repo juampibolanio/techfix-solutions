@@ -53,11 +53,14 @@ public class TicketService {
         User client = userRepository.findById(dto.clientId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        User agent = userRepository.findById(dto.agentId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
         Category category = categoryRepository.findById(dto.categoryId())
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        User agent = null;
+        if (dto.agentId() != null) {
+            agent = userRepository.findById(dto.agentId())
+                    .orElseThrow(() -> new UserNotFoundException("Agent not found"));
+        }
 
         Ticket ticket = mapper.toEntity(dto, client, agent, category);
 
@@ -84,7 +87,7 @@ public class TicketService {
                 .orElseThrow(() -> new UserNotFoundException("Agent not found"));
 
         ticket.setAgent(agent);
-
+        ticketRepository.save(ticket);
         return mapper.toResponseDto(ticket, null);
     }
 }

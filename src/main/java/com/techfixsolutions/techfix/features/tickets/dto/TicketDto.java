@@ -20,7 +20,7 @@ public record TicketDto(
     @NotNull(message = "Category ID is required")
     UUID categoryId,
 
-    @NotBlank(message = "Client ID is required")
+    @NotNull(message = "Client ID is required")
     UUID clientId,
 
     UUID agentId

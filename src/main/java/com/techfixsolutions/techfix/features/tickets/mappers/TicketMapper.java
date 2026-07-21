@@ -1,13 +1,13 @@
 package com.techfixsolutions.techfix.features.tickets.mappers;
 
+import com.techfixsolutions.techfix.features.categories.dto.CategorySummaryDto;
 import com.techfixsolutions.techfix.features.categories.models.Category;
 import com.techfixsolutions.techfix.features.comments.dto.CommentResponseDto;
 import com.techfixsolutions.techfix.features.comments.mappers.CommentMapper;
-import com.techfixsolutions.techfix.features.tickets.dto.TicketDto;
-import com.techfixsolutions.techfix.features.tickets.dto.TicketResponseDto;
-import com.techfixsolutions.techfix.features.tickets.dto.TicketUpdateDto;
+import com.techfixsolutions.techfix.features.tickets.dto.*;
 import com.techfixsolutions.techfix.features.comments.models.Comment;
 import com.techfixsolutions.techfix.features.tickets.models.Ticket;
+import com.techfixsolutions.techfix.features.users.dto.UserSummaryDto;
 import com.techfixsolutions.techfix.features.users.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,15 +20,20 @@ public class TicketMapper {
     private final CommentMapper commentMapper;
 
     public Ticket toEntity(TicketDto dto, User client, User agent, Category category) {
-        return Ticket.builder()
+        Ticket.TicketBuilder builder = Ticket.builder()
                 .title(dto.title())
                 .description(dto.description())
-                .status(dto.status())
-                .priority(dto.priority())
                 .category(category)
                 .client(client)
-                .agent(agent)
-                .build();
+                .agent(agent);
+
+        if (dto.status() != null) {
+            builder.status(dto.status());
+        }
+        if (dto.priority() != null) {
+            builder.priority(dto.priority());
+        }
+        return builder.build();
     }
 
     public TicketResponseDto toResponseDto(Ticket ticket, List<Comment> comments) {
@@ -39,15 +44,32 @@ public class TicketMapper {
                     .toList();
         }
 
+        CategorySummaryDto categoryDto = new CategorySummaryDto(
+                ticket.getCategory().getUuid(),
+                ticket.getCategory().getName()
+        );
+
+        UserSummaryDto clientDto = new UserSummaryDto(
+                ticket.getClient().getUuid(),
+                ticket.getClient().getFullName(),
+                ticket.getClient().getEmail()
+        );
+
+        UserSummaryDto agentDto = ticket.getAgent() != null ? new UserSummaryDto(
+                ticket.getAgent().getUuid(),
+                ticket.getAgent().getFullName(),
+                ticket.getAgent().getEmail()
+        ) : null;
+
         return new TicketResponseDto(
                 ticket.getUuid(),
                 ticket.getTitle(),
                 ticket.getDescription(),
                 ticket.getStatus(),
                 ticket.getPriority(),
-                ticket.getCategory(),
-                ticket.getClient(),
-                ticket.getAgent(),
+                categoryDto,
+                clientDto,
+                agentDto,
                 ticket.getCreatedAt(),
                 ticket.getUpdatedAt(),
                 commentsDtos

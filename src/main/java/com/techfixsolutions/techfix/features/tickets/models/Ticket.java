@@ -32,12 +32,12 @@ public class Ticket {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'OPEN'")
+    @Column(nullable = false)
     @Builder.Default
     private TicketStatus status = TicketStatus.OPEN;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'LOW'")
+    @Column(nullable = false)
     @Builder.Default
     private Priority priority = Priority.LOW;
 
@@ -53,7 +53,7 @@ public class Ticket {
     @JoinColumn(name = "agent_id")
     private User agent;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     @CreatedDate
