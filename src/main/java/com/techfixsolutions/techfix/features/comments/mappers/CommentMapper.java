@@ -4,7 +4,9 @@ import com.techfixsolutions.techfix.features.comments.dto.CommentDto;
 import com.techfixsolutions.techfix.features.comments.dto.CommentResponseDto;
 import com.techfixsolutions.techfix.features.comments.dto.CommentUpdateDto;
 import com.techfixsolutions.techfix.features.comments.models.Comment;
+import com.techfixsolutions.techfix.features.tickets.dto.TicketSummaryDto;
 import com.techfixsolutions.techfix.features.tickets.models.Ticket;
+import com.techfixsolutions.techfix.features.users.dto.UserSummaryDto;
 import com.techfixsolutions.techfix.features.users.models.User;
 import org.springframework.stereotype.Component;
 
@@ -19,12 +21,25 @@ public class CommentMapper {
     }
 
     public CommentResponseDto toResponseDto(Comment comment) {
+
+        var userDto = new UserSummaryDto(
+                comment.getUser().getUuid(),
+                comment.getUser().getFullName(),
+                comment.getUser().getEmail()
+        );
+
+
+        var ticketDto = new TicketSummaryDto(
+                comment.getTicket().getUuid(),
+                comment.getTicket().getTitle(),
+                comment.getTicket().getStatus()
+        );
+
         return new CommentResponseDto(
                 comment.getUuid(),
                 comment.getContent(),
                 comment.getCreatedAt(),
-                comment.getUser(),
-                comment.getTicket()
+                userDto
         );
     }
 

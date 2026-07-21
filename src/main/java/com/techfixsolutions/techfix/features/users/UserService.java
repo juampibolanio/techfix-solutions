@@ -3,6 +3,7 @@ package com.techfixsolutions.techfix.features.users;
 import com.techfixsolutions.techfix.features.users.dto.UserDto;
 import com.techfixsolutions.techfix.features.users.dto.UserResponseDto;
 import com.techfixsolutions.techfix.features.users.dto.UserUpdateDto;
+import com.techfixsolutions.techfix.features.users.exceptions.EmailAlreadyExistsException;
 import com.techfixsolutions.techfix.features.users.exceptions.UserNotFoundException;
 import com.techfixsolutions.techfix.features.users.mappers.UserMapper;
 import com.techfixsolutions.techfix.features.users.models.User;
@@ -32,6 +33,10 @@ public class UserService {
   }
 
   public UserResponseDto create(UserDto dto) {
+    if (repository.existsByEmail(dto.email())) {
+      throw new EmailAlreadyExistsException("Email already registered");
+    }
+
     User mappedUser = mapper.toEntity(dto);
 
     User savedUser = repository.save(mappedUser);
